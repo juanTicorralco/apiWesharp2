@@ -139,27 +139,43 @@ if(count($routesArray)==0){
         array_pop($columns);
         //echo '<pre>'; print_r($columns); echo '</pre>';
 
-        if(isset($_POST))
-        /* validate that column names match the db */
-        $count=0;
-        foreach($columns as $key => $value){
-            if(array_keys($_POST)[$key]==$value){
-                $count++;
+        if(isset($_POST)){
+             /* validate that the variables in the PUT fields match the column names in the database */
+             $count=0;
+             foreach(array_keys($_POST) as $key => $value){
+                 $count = array_search($value, $columns);
+                 
+             }
+
+             if($count>0){
+
+                /* we give to response of controller for user register */
+                if( isset($_GET["register"]) && $_GET["register"]==true){
+
+                   /*  $json=array(
+                        'status' => 200,
+                        'result' => $_GET["register"]
+                    );
+                    echo json_encode($json, http_response_code($json["status"]));
+                    return; */
+
+                    /* we give response of the controller for insert data in a table */
+                    $response= new PostController();
+                    $response -> postRegister(explode("?", $routesArray[1])[0], $_POST);
+                }else {
+
+                    /* we give response of the controller for insert data in a table */
+                    $response= new PostController();
+                    $response -> postData(explode("?", $routesArray[1])[0], $_POST);
+                }
             }else {
-                $json = array (
-                    "status" => 404,
-                    "result" => "Error: los campos no coinciden con la base de datos"
+                $json=array(
+                    'status' => 400,
+                    'result' => "Error: Fields in the form do not match the database"
                 );
-                
                 echo json_encode($json, http_response_code($json["status"]));
                 return;
             }
-        }
-        /* validate that the post variables match those of the db */
-        if($count==count($columns)){
-            /* we give response of the controller for insert data in a table */
-            $response= new PostController();
-            $response -> postData(explode("?", $routesArray[1])[0], $_POST);
         }
 
     }
@@ -225,13 +241,34 @@ if(count($routesArray)==0){
     }
      /* petition DELETE */
      if(count($routesArray)==1 && isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"]=="DELETE"){
-        $json = array (
-            "status" => 200,
-            "result" => "DELETE"
-        );
-        
-        echo json_encode($json, http_response_code($json["status"]));
-        return;
+
+        /* we ask about the id */
+        if( isset($_GET["id"]) && isset($_GET["nameId"])){
+            /* Validated to exist id */
+            $table= explode("?", $routesArray[1])[0];
+            $linkTo=$_GET["nameId"];
+            $equalTo=$_GET["id"];
+            $orderBy=null;
+            $orderMode=null;
+            $startAt=null;
+            $endAt=null;
+
+            $response= PutController:: getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt);
+
+            if($response){
+
+                $response = new DeleteController();
+                $response -> deleteData(explode("?", $routesArray[1])[0], $_GET["id"], $_GET["nameId"]);
+
+            }else {
+                $json=array(
+                    'status' => 400,
+                    'result' => "Error: The id is not found in the database"
+                );
+                echo json_encode($json, http_response_code($json["status"]));
+                return;
+            }
+        }
     }
 }
 ?>

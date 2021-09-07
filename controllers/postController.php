@@ -13,6 +13,17 @@ class PostController{
         $return -> responseData($response, "POST");
     }
 
+    /* POST petition for create register */ 
+    public function postRegister($table, $data){
+        if(isset($data["password_user"]) && $data["password_user"] != null){
+            $crypt= crypt($data["password_user"], '$2a$07$pdgtwzaldisoqrtrswqpxzasdte$');
+            $data["password_user"]= $crypt;
+            $response= PostModel :: postData($table, $data);
+            $return= new PostController();
+            $return -> responseData($response, "POST");
+        }
+    }
+
     /* response of de data */
     public function responseData($response, $metodh){
         if(!empty($response)){

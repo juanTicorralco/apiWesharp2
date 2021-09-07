@@ -11,9 +11,11 @@ require_once "controllers/routeControler.php";
 require_once "controllers/getController.php";
 require_once "controllers/postController.php";
 require_once "controllers/putController.php";
+require_once "controllers/deleteController.php";
 require_once "models/getModel.php";
 require_once "models/postModel.php";
 require_once "models/putModel.php";
+require_once "models/deleteModel.php";
 
 $index = new RouetesController();
 $index -> index();

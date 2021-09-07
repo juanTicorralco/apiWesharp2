@@ -22,7 +22,7 @@ class PutModel{
         if($stmt->execute()){
             return "The Process was Successfull";
         }else {
-            echo Conection::connect()->errorinfo();
+            return Conection::connect()->errorinfo();
         }
     }
 }
