@@ -183,13 +183,40 @@ if(count($routesArray)==0){
                 $data=array();
                 parse_str(file_get_contents('php://input'), $data);
                 
-                /* We request controller response to edit any table */
-                $response=new PutController();
-                $response -> putData(explode("?", $routesArray[1])[0], $data, $_GET["id"], $_GET["nameId"] );
+                /* BRING the list of the columns of the table to change */
+                $columns=array();
+                $dbPrincipal= RouetesController::dbPrincipal();
+                $response= PostController::getColumnsData(explode("?", $routesArray[1])[0], $dbPrincipal);
+            
+                foreach($response as $key => $value){
+                    array_push($columns,$value->item);
+                }
+                /* we remove the first and last index */
+                array_shift($columns);
+                array_pop($columns);
+                array_pop($columns);
+
+                /* validate that the variables in the PUT fields match the column names in the database */
+                $count=0;
+                foreach(array_keys($data) as $key => $value){
+                    $count = array_search($value, $columns);
+                }
+                if($count>0){
+                    /* We request controller response to edit any table */
+                    $response=new PutController();
+                    $response -> putData(explode("?", $routesArray[1])[0], $data, $_GET["id"], $_GET["nameId"] );
+                }else {
+                    $json=array(
+                        'status' => 400,
+                        'result' => "Error: Fields in the form do not match the database"
+                    );
+                    echo json_encode($json, http_response_code($json["status"]));
+                    return;
+                }
             }else {
                 $json=array(
                     'status' => 400,
-                    'result' => "Error: The id is not found in de database"
+                    'result' => "Error: The id is not found in the database"
                 );
                 echo json_encode($json, http_response_code($json["status"]));
                 return;
