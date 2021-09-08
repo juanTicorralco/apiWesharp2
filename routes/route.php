@@ -137,7 +137,6 @@ if(count($routesArray)==0){
         }
         array_shift($columns);
         array_pop($columns);
-        //echo '<pre>'; print_r($columns); echo '</pre>';
 
         if(isset($_POST)){
              /* validate that the variables in the PUT fields match the column names in the database */
@@ -152,21 +151,42 @@ if(count($routesArray)==0){
                 /* we give to response of controller for user register */
                 if( isset($_GET["register"]) && $_GET["register"]==true){
 
-                   /*  $json=array(
-                        'status' => 200,
-                        'result' => $_GET["register"]
-                    );
-                    echo json_encode($json, http_response_code($json["status"]));
-                    return; */
-
                     /* we give response of the controller for insert data in a table */
                     $response= new PostController();
                     $response -> postRegister(explode("?", $routesArray[1])[0], $_POST);
+                }else if( isset($_GET["login"]) && $_GET["login"]==true){
+
+                        /* we give response of the controller for insert data in a table */
+                        $response= new PostController();
+                        $response -> postLogin(explode("?", $routesArray[1])[0], $_POST);
+                } else if(isset($_GET["token"])){
+
+                    /* we bring the user according to the tok */
+                    $user = GetModel::getFilterData("users", "token_user", $_GET["token"],null,null,null,null);
+
+                    if(!empty($user)){
+
+                        /* we give response of the controller for insert data in a table */
+                        $response= new PostController();
+                        $response -> postData(explode("?", $routesArray[1])[0], $_POST);
+                    }else{
+
+                        $json=array(
+                            'status' => 400,
+                            'result' => "Error: The user is not authorized"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                    
                 }else {
 
-                    /* we give response of the controller for insert data in a table */
-                    $response= new PostController();
-                    $response -> postData(explode("?", $routesArray[1])[0], $_POST);
+                    $json=array(
+                        'status' => 400,
+                        'result' => "Error: Authorization required"
+                    );
+                    echo json_encode($json, http_response_code($json["status"]));
+                    return;
                 }
             }else {
                 $json=array(
@@ -218,9 +238,37 @@ if(count($routesArray)==0){
                     $count = array_search($value, $columns);
                 }
                 if($count>0){
-                    /* We request controller response to edit any table */
-                    $response=new PutController();
-                    $response -> putData(explode("?", $routesArray[1])[0], $data, $_GET["id"], $_GET["nameId"] );
+
+                    if(isset($_GET["token"])){
+
+                        /* we bring the user according to the tok */
+                        $user = GetModel::getFilterData("users", "token_user", $_GET["token"],null,null,null,null);
+    
+                        if(!empty($user)){
+    
+                            /* We request controller response to edit any table */
+                            $response=new PutController();
+                            $response -> putData(explode("?", $routesArray[1])[0], $data, $_GET["id"], $_GET["nameId"] );
+                        }else{
+    
+                            $json=array(
+                                'status' => 400,
+                                'result' => "Error: The user is not authorized"
+                            );
+                            echo json_encode($json, http_response_code($json["status"]));
+                            return;
+                        }
+                        
+                    }else {
+    
+                        $json=array(
+                            'status' => 400,
+                            'result' => "Error: Authorization required"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+
                 }else {
                     $json=array(
                         'status' => 400,
@@ -257,9 +305,34 @@ if(count($routesArray)==0){
 
             if($response){
 
-                $response = new DeleteController();
-                $response -> deleteData(explode("?", $routesArray[1])[0], $_GET["id"], $_GET["nameId"]);
+                if(isset($_GET["token"])){
 
+                    /* we bring the user according to the tok */
+                    $user = GetModel::getFilterData("users", "token_user", $_GET["token"],null,null,null,null);
+
+                    if(!empty($user)){
+
+                        $response = new DeleteController();
+                        $response -> deleteData(explode("?", $routesArray[1])[0], $_GET["id"], $_GET["nameId"]);
+                    }else{
+
+                        $json=array(
+                            'status' => 400,
+                            'result' => "Error: The user is not authorized"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                    
+                }else {
+
+                    $json=array(
+                        'status' => 400,
+                        'result' => "Error: Authorization required"
+                    );
+                    echo json_encode($json, http_response_code($json["status"]));
+                    return;
+                }
             }else {
                 $json=array(
                     'status' => 400,
