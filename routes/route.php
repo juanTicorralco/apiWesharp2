@@ -165,18 +165,30 @@ if(count($routesArray)==0){
                     $user = GetModel::getFilterData("users", "token_user", $_GET["token"],null,null,null,null);
 
                     if(!empty($user)){
+                        /* validate that the token has not expired */
+                        $time=time();
+                        if($user[0]->token_exp_user < $time){
 
-                        /* we give response of the controller for insert data in a table */
-                        $response= new PostController();
-                        $response -> postData(explode("?", $routesArray[1])[0], $_POST);
+                            /* we give response of the controller for insert data in a table */
+                            $response= new PostController();
+                            $response -> postData(explode("?", $routesArray[1])[0], $_POST);
+                        }else{
+
+                            $json=array(
+                                'status' => 400,
+                                'result' => "Error: the token has expired"
+                            );
+                            echo json_encode($json, http_response_code($json["status"]));
+                            return;
+                        }
                     }else{
 
-                        $json=array(
-                            'status' => 400,
-                            'result' => "Error: The user is not authorized"
-                        );
-                        echo json_encode($json, http_response_code($json["status"]));
-                        return;
+                            $json=array(
+                                'status' => 400,
+                                'result' => "Error: The user is not authorized"
+                            );
+                            echo json_encode($json, http_response_code($json["status"]));
+                            return;
                     }
                     
                 }else {
@@ -245,10 +257,23 @@ if(count($routesArray)==0){
                         $user = GetModel::getFilterData("users", "token_user", $_GET["token"],null,null,null,null);
     
                         if(!empty($user)){
-    
-                            /* We request controller response to edit any table */
-                            $response=new PutController();
-                            $response -> putData(explode("?", $routesArray[1])[0], $data, $_GET["id"], $_GET["nameId"] );
+
+                             /* validate that the token has not expired */
+                            $time=time();
+                            if($user[0]->token_exp_user < $time){
+                                
+                                /* We request controller response to edit any table */
+                                $response=new PutController();
+                                $response -> putData(explode("?", $routesArray[1])[0], $data, $_GET["id"], $_GET["nameId"] );
+                            }else{
+
+                                $json=array(
+                                    'status' => 400,
+                                    'result' => "Error: the token has expired"
+                                );
+                                echo json_encode($json, http_response_code($json["status"]));
+                                return;
+                            }
                         }else{
     
                             $json=array(
@@ -312,8 +337,22 @@ if(count($routesArray)==0){
 
                     if(!empty($user)){
 
-                        $response = new DeleteController();
-                        $response -> deleteData(explode("?", $routesArray[1])[0], $_GET["id"], $_GET["nameId"]);
+                         /* validate that the token has not expired */
+                         $time=time();
+                         if($user[0]->token_exp_user < $time){
+
+                            $response = new DeleteController();
+                            $response -> deleteData(explode("?", $routesArray[1])[0], $_GET["id"], $_GET["nameId"]);
+                         }else{
+
+                             $json=array(
+                                 'status' => 400,
+                                 'result' => "Error: the token has expired"
+                             );
+                             echo json_encode($json, http_response_code($json["status"]));
+                             return;
+                         }
+
                     }else{
 
                         $json=array(

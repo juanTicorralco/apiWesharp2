@@ -41,7 +41,7 @@ class PostController{
 
                 $token = array(
                     "iat" => $time, //time start of token 
-                    "exp" => $time * (60*60*24), //time of expire the token (1 day)
+                    "exp" => $time * (60*1), //time of expire the token (1 day)
                     'data' => [
                         "id" => $response[0]->id_user,
                         "email" => $response[0]->email_user
@@ -52,7 +52,8 @@ class PostController{
 
                 /* update the database with the token user */
                 $data = array(
-                    "token_user" => $jwt
+                    "token_user" => $jwt,
+                    "token_exp_user" => $token["exp"]
                 );
 
                 $update = PutModel::putData($table, $data, $response[0]->id_user, "id_user");
@@ -60,6 +61,7 @@ class PostController{
                 if($update=="The Process was Successfull"){
 
                     $response[0]->token_user = $jwt;
+                    $response[0]->token_exp_user=$token["exp"];
 
                     $return= new PostController();
                     $return -> responseData($response, "POST", null);
