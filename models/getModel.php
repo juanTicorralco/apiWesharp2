@@ -174,4 +174,69 @@ class GetModel{
             return $e->getMessage();
         }
     }
+
+     /* GET Petition relation tables with Filter search */
+     static public function getSearchRelData($rel, $type, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt){
+
+        $relArray= explode(",", $rel);
+        $typeArray=explode(",", $type);
+        
+        if(isset($relArray[1]) && isset($typeArray[1])){
+            $on1a= $relArray[0].".id_".$typeArray[1]."_".$typeArray[0];
+            $on1b= $relArray[1].".id_".$typeArray[1];
+        }
+
+        if(isset($relArray[2]) && isset($typeArray[2])){
+            $on2a= $relArray[0].".id_".$typeArray[2]."_".$typeArray[0];
+            $on2b= $relArray[2].".id_".$typeArray[2];
+        }
+        if(isset($relArray[3]) && isset($typeArray[3])){
+            $on3a=$relArray[0].".id_".$typeArray[3]."_".$typeArray[0];
+            $on3b=$relArray[3].".id_".$typeArray[3];
+        }
+
+        try{  
+            /* relation about 2 tables  */
+            if(count($relArray)==2 && count($typeArray)==2){
+                if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
+                    $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode");
+                }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
+                    $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                } else{
+                $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo LIKE '%$search%'");
+                }
+            } 
+            /* relation amoung 3 tables */
+            if(count($relArray)==3 && count($typeArray)==3){
+                if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
+                    $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode");
+                }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
+                    $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                } else{
+                $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo LIKE '%$search%'");
+                }
+            } 
+            /* relation amoung 4 tables */
+            if(count($relArray)==4 && count($typeArray)==4){  
+
+                if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
+
+                    $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode");
+                }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
+                    
+                    $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                } else{
+                
+                    $stmt = Conection::connect()->prepare("SELECT * FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo LIKE '%$search%'");
+                }
+            }
+
+            //$stmt -> bindParam(":".$linkTo, $search, PDO::PARAM_STR);
+            $stmt -> execute();
+            return $stmt ->fetchAll(PDO::FETCH_CLASS);
+
+        }catch(PDOException $e){
+            return $e->getMessage();
+        } 
+    }
 }

@@ -8,6 +8,7 @@ class PostController{
         $response= PostModel::getColumnsData($table, $db);
         return $response;
     } 
+    
     /* POST petition for create data */ 
     public function postData($table, $data){
         $response= PostModel :: postData($table, $data);

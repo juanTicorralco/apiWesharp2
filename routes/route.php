@@ -27,7 +27,7 @@ if(count($routesArray)==0){
                 $orderBy=null;
                 $orderMode=null;
             }
-            /* GET star and ent at  */
+            /* GET star and end at  */
             if(isset($_GET["startAt"]) && isset($_GET["endAt"])){
                 $startAt=$_GET["startAt"];
                 $endAt=$_GET["endAt"];
@@ -59,20 +59,25 @@ if(count($routesArray)==0){
             $response -> getRelData($_GET["rel"], $_GET["type"],$orderBy, $orderMode, $startAt, $endAt);
 
         }else if(isset($_GET['rel']) && isset($_GET['type']) && explode("?", $routesArray[1])[0] == "relations" && isset($_GET['linkTo']) && isset($_GET['equalTo'])){
+            
             /* Get Petition of relation tables with filter */
              /* GET Order Tables  */
              if(isset($_GET["orderBy"]) && isset($_GET["orderMode"])){
+
                 $orderBy=$_GET["orderBy"];
                 $orderMode=$_GET["orderMode"];
             }else{
+
                 $orderBy=null;
                 $orderMode=null;
             }
              /* GET star and ent at  */
              if(isset($_GET["startAt"]) && isset($_GET["endAt"])){
+
                 $startAt=$_GET["startAt"];
                 $endAt=$_GET["endAt"];
             }else{
+
                 $startAt=null;
                 $endAt=null;
             }
@@ -80,26 +85,40 @@ if(count($routesArray)==0){
             $response -> getRelFilterData($_GET["rel"], $_GET["type"], $_GET["linkTo"], $_GET["equalTo"], $orderBy, $orderMode, $startAt, $endAt);
 
         }else if(isset($_GET['linkTo']) && isset($_GET['search'])){
+
             /* get petition for search */
             /* GET Order Tables  */
             if(isset($_GET["orderBy"]) && isset($_GET["orderMode"])){
+
                 $orderBy=$_GET["orderBy"];
                 $orderMode=$_GET["orderMode"];
             }else{
+
                 $orderBy=null;
                 $orderMode=null;
             }
              /* GET star and ent at  */
              if(isset($_GET["startAt"]) && isset($_GET["endAt"])){
+
                 $startAt=$_GET["startAt"];
                 $endAt=$_GET["endAt"];
             }else{
+
                 $startAt=null;
                 $endAt=null;
             }
-            $response = new GetController();
-            $response -> getSearchData(explode("?", $routesArray[1])[0], $_GET["linkTo"], $_GET["search"], $orderBy, $orderMode, $startAt, $endAt);
-        }else{
+
+            if( explode("?", $routesArray[1])[0] == "relations" && isset($_GET["rel"]) && isset($_GET["type"])){
+
+                $response = new GetController();
+                $response -> getSearchRelData($_GET["rel"], $_GET["type"], $_GET["linkTo"], $_GET["search"], $orderBy, $orderMode, $startAt, $endAt);
+        
+            }else{
+                
+                $response = new GetController();
+                $response -> getSearchData(explode("?", $routesArray[1])[0], $_GET["linkTo"], $_GET["search"], $orderBy, $orderMode, $startAt, $endAt);
+            }
+         }else{
             
             /* GET Petition not filter */
             /* GET Order Tables  */
