@@ -9,8 +9,8 @@ class PutController{
     }
 
     /* GET Petition with Filter */
-    static public function getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt){
-        $response = GetModel::getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt);
+    static public function getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt, $select){
+        $response = GetModel::getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt, $select);
         return $response;
     }
 

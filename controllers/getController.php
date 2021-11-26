@@ -1,9 +1,9 @@
 <?php
 class GetController {
     /* GET Petition Not Filter */
-    public function getData($table, $orderBy, $orderMode, $startAt, $endAt){
+    public function getData($table, $orderBy, $orderMode, $startAt, $endAt, $select){
         
-        $response = GetModel::getData($table, $orderBy, $orderMode, $startAt, $endAt);
+        $response = GetModel::getData($table, $orderBy, $orderMode, $startAt, $endAt, $select);
 
         if( $response == "SQLSTATE[42S02]: Base table or view not found: 1146 Table 'wesharp2.$table' doesn't exist" ||
             $response=="SQLSTATE[42S22]: Column not found: 1054 Unknown column '$orderBy' in 'order clause'" ||
@@ -30,9 +30,9 @@ class GetController {
     }
 
     /* GET Petition with Filter */
-    public function getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt){
+    public function getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt, $select){
         
-        $response = GetModel::getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt);
+        $response = GetModel::getFilterData($table, $linkTo, $equalTo,$orderBy, $orderMode, $startAt, $endAt, $select);
         if( $response == "SQLSTATE[42S02]: Base table or view not found: 1146 Table 'wesharp2.$table' doesn't exist" ||
             $response == "SQLSTATE[42S22]: Column not found: 1054 Unknown column '$linkTo' in 'where clause'"){
             $json = array (
@@ -57,9 +57,9 @@ class GetController {
     }
 
     /* GET Petition relation tables not Filter */
-    public function getRelData($rel, $type,$orderBy, $orderMode, $startAt, $endAt){
+    public function getRelData($rel, $type,$orderBy, $orderMode, $startAt, $endAt, $select){
         
-        $response = GetModel::getRelData($rel, $type, $orderBy, $orderMode, $startAt, $endAt);
+        $response = GetModel::getRelData($rel, $type, $orderBy, $orderMode, $startAt, $endAt, $select);
         $relArray= explode(",", $rel);
         $typeArray=explode(",", $type);
 
@@ -117,9 +117,9 @@ class GetController {
     }
 
     /* GET Petition relation tables with Filter */
-    public function getRelFilterData($rel, $type, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt){
+    public function getRelFilterData($rel, $type, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $select){
         
-        $response = GetModel::getRelFilterData($rel, $type, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt);
+        $response = GetModel::getRelFilterData($rel, $type, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $select);
         $relArray= explode(",", $rel);
         $typeArray=explode(",", $type);
 
@@ -178,9 +178,9 @@ class GetController {
     }
 
     /* get petition for search */
-    public function getSearchData($table, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt){
+    public function getSearchData($table, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt, $select){
         
-        $response = GetModel::getSearchData($table, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt);
+        $response = GetModel::getSearchData($table, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt, $select );
         if( $response == "SQLSTATE[42S02]: Base table or view not found: 1146 Table 'wesharp2.$table' doesn't exist" ||
             $response == "SQLSTATE[42S22]: Column not found: 1054 Unknown column '$linkTo' in 'where clause'"){
             $json = array (
@@ -205,9 +205,9 @@ class GetController {
     }
 
     /* GET Petition relation tables with Filter Search */
-    public function getSearchRelData($rel, $type, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt){
+    public function getSearchRelData($rel, $type, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt, $select){
         
-        $response = GetModel::getSearchRelData($rel, $type, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt);
+        $response = GetModel::getSearchRelData($rel, $type, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt, $select);
     
         $relArray= explode(",", $rel);
         $typeArray=explode(",", $type);
@@ -252,7 +252,8 @@ class GetController {
         }else if(!empty($response)){
             $json = array (
                 "status" => 200,
-                "result" => $response
+                "result" => $response,
+                "total" => count($response)
             );
         }else{
             $json = array (
