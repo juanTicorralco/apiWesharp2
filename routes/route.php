@@ -213,8 +213,8 @@ if (count($routesArray) == 0) {
 
 
                         /* we bring the user according to the tok */
-                        $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, $_GET["select"]);
-
+                        $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, "token_exp_user");
+  
                         if (!empty($user)) {
                             /* validate that the token has not expired */
                             $time = time();
@@ -274,8 +274,9 @@ if (count($routesArray) == 0) {
             $orderMode = null;
             $startAt = null;
             $endAt = null;
+            $select= $_GET["nameId"];
 
-            $response = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
+            $response = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $select);
 
             if ($response) {
                 $data = array();
@@ -298,14 +299,6 @@ if (count($routesArray) == 0) {
                 $count = 0;
                 foreach (array_keys($data) as $key => $value) {
                     $count = array_search($value, $columns);
-
-                    if (substr($value, 0, 6) == "views_") {
-
-                        /* We request controller response to edit any table */
-                        $response = new PutController();
-                        $response->putData(explode("?", $routesArray[1])[0], $data, $_GET["id"], $_GET["nameId"]);
-                        return;
-                    }
                 }
                 if ($count > 0) {
 
@@ -347,7 +340,7 @@ if (count($routesArray) == 0) {
                         } else {
 
                             /* we bring the user according to the tok */
-                            $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, $_GET["select"]);
+                            $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, "token_exp_user" );
 
                             if (!empty($user)) {
 
@@ -417,14 +410,15 @@ if (count($routesArray) == 0) {
             $orderMode = null;
             $startAt = null;
             $endAt = null;
+            $select = $_GET["nameId"];
 
-            $response = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
+            $response = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $select);
 
             if ($response) {
 
                 if (isset($_GET["token"])) {
                     /* we bring the user according to the tok */
-                    $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, $_GET["select"]);
+                    $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, "token_exp_user");
 
                     if (!empty($user)) {
 
