@@ -214,7 +214,7 @@ if (count($routesArray) == 0) {
 
                         /* we bring the user according to the tok */
                         $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, "token_exp_user");
-  
+
                         if (!empty($user)) {
                             /* validate that the token has not expired */
                             $time = time();
@@ -274,7 +274,7 @@ if (count($routesArray) == 0) {
             $orderMode = null;
             $startAt = null;
             $endAt = null;
-            $select= $_GET["nameId"];
+            $select = $_GET["nameId"];
 
             $response = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $select);
 
@@ -340,13 +340,13 @@ if (count($routesArray) == 0) {
                         } else {
 
                             /* we bring the user according to the tok */
-                            $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, "token_exp_user" );
+                            $user = GetModel::getFilterData("users", "token_user", $_GET["token"], null, null, null, null, "token_exp_user");
 
                             if (!empty($user)) {
 
                                 /* validate that the token has not expired */
                                 $time = time();
-                                if ($user[0]->token_exp_user < $time) {
+                                if ($user[0]->token_exp_user > $time) {
 
                                     /* We request controller response to edit any table */
                                     $response = new PutController();

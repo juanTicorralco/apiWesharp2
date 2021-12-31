@@ -42,7 +42,7 @@ class PostController{
 
                 $token = array(
                     "iat" => $time, //time start of token 
-                    "exp" => $time * (60*1), //time of expire the token (1 day)
+                    "exp" => $time + (60*60*24), //time of expire the token (1 day)
                     'data' => [
                         "id" => $response[0]->id_user,
                         "email" => $response[0]->email_user
