@@ -226,7 +226,7 @@ if (count($routesArray) == 0) {
                             } else {
 
                                 $json = array(
-                                    'status' => 400,
+                                    'status' => 303,
                                     'result' => "Error: the token has expired"
                                 );
                                 echo json_encode($json, http_response_code($json["status"]));
@@ -354,7 +354,7 @@ if (count($routesArray) == 0) {
                                 } else {
 
                                     $json = array(
-                                        'status' => 400,
+                                        'status' => 303,
                                         'result' => "Error: the token has expired"
                                     );
                                     echo json_encode($json, http_response_code($json["status"]));
@@ -431,7 +431,7 @@ if (count($routesArray) == 0) {
                         } else {
 
                             $json = array(
-                                'status' => 400,
+                                'status' => 303,
                                 'result' => "Error: the token has expired"
                             );
                             echo json_encode($json, http_response_code($json["status"]));
