@@ -23,15 +23,21 @@ class PostModel{
         $columns .= ")";
         $params .=")";
 
-        $stmt= Conection :: connect() -> prepare("INSERT INTO $table $columns VALUES $params");
+        $link=  Conection :: connect();
+        $stmt= $link-> prepare("INSERT INTO $table $columns VALUES $params");
 
         foreach($data as $key => $value){
             $stmt -> bindParam(":".$key, $data[$key], PDO::PARAM_STR);
         }
 
         if($stmt->execute()){
-            return "The Proces as Successfull";
+            $return = array(
+                "idlast" => $link->lastInsertId(),
+                "comment" => "The Proces as Successfull"
+            );
             $stmt -> close();
+            return $return;
+            
 
         }else{
             echo Conection::connect() -> errorInfo();
