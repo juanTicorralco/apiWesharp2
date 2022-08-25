@@ -218,7 +218,7 @@ if (count($routesArray) == 0) {
                         if (!empty($user)) {
                             /* validate that the token has not expired */
                             $time = time();
-                            if ($user[0]->token_exp_user < $time) {
+                            if ($user[0]->token_exp_user > $time) {
 
                                 /* we give response of the controller for insert data in a table */
                                 $response = new PostController();

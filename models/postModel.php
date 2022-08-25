@@ -35,9 +35,8 @@ class PostModel{
                 "idlast" => $link->lastInsertId(),
                 "comment" => "The Proces as Successfull"
             );
-            $stmt -> close();
             return $return;
-            
+            $stmt -> close();
 
         }else{
             echo Conection::connect() -> errorInfo();
