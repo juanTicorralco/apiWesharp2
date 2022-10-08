@@ -29,7 +29,7 @@ class PostController{
 
      /* POST petition for login users */ 
      public function postLogin($table, $data){
-        $response = GetModel::getFilterData($table, "email_user", $data["email_user"],null, null, null, null, "picture_user, displayname_user, username_user, country_user, city_user, phone_user, address_user, method_user, wishlist_user, date_created_user, date_updated_user, rol_user, password_user, id_user, email_user, token_user, token_exp_user, verificated_user");
+        $response = GetModel::getFilterData($table, "email_user", $data["email_user"],null, null, null, null, "picture_user, displayname_user, username_user, country_user, city_user, phone_user, address_user, method_user, wishlist_user, date_created_user, date_updated_user, rol_user, password_user, id_user, email_user, token_user, token_exp_user, verificated_user, map_user");
 
         if(!empty($response)){
             /* password hash */
