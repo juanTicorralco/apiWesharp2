@@ -160,13 +160,30 @@ class GetModel{
     /* GET Petition for search */
     static public function getSearchData($table, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt, $select){
 
+        $linkToArray = explode(",", $linkTo);
+        $searchArray = explode(",", $search);
+        $linkToText = "";
+        if(count($linkToArray)>1){
+            foreach($linkToArray as $key => $value){
+                if($key>0){
+                    $linkToText .= "AND ".$value." = :".$value." ";
+                }
+            }
+        }
+
         try{
             if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkTo LIKE '%$search%'  ORDER BY $orderBy $orderMode");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText ORDER BY $orderBy $orderMode");
             }else if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkTo LIKE '%$search%'  ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText  ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
             } else{
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkTo LIKE '%$search%'");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText");
+            }
+            if(count($linkToArray)>1){
+                unset($linkToArray[0]);
+                foreach($linkToArray as $key => $value){
+                    $stmt->bindParam(":".$value, $searchArray[$key], PDO::PARAM_STR);
+                }
             }
             $stmt -> execute();
             return $stmt ->fetchAll(PDO::FETCH_CLASS);
@@ -177,6 +194,17 @@ class GetModel{
 
      /* GET Petition relation tables with Filter search */
      static public function getSearchRelData($rel, $type, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt, $select){
+
+        $linkToArray = explode(",", $linkTo);
+        $searchArray = explode(",", $search);
+        $linkToText = "";
+        if(count($linkToArray)>1){
+            foreach($linkToArray as $key => $value){
+                if($key>0){
+                    $linkToText .= "AND ".$value." = :".$value." ";
+                }
+            }
+        }
 
         $relArray= explode(",", $rel);
         $typeArray=explode(",", $type);
@@ -199,21 +227,21 @@ class GetModel{
             /* relation about 2 tables  */
             if(count($relArray)==2 && count($typeArray)==2){
                 if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText ORDER BY $orderBy $orderMode");
                 }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
                 } else{
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo LIKE '%$search%'");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText");
                 }
             } 
             /* relation amoung 3 tables */
             if(count($relArray)==3 && count($typeArray)==3){
                 if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText ORDER BY $orderBy $orderMode");
                 }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
                 } else{
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo LIKE '%$search%'");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText");
                 }
             } 
             /* relation amoung 4 tables */
@@ -221,17 +249,22 @@ class GetModel{
 
                 if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
 
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText ORDER BY $orderBy $orderMode");
                 }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
                     
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
                 } else{
                 
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo LIKE '%$search%'");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkToArray[0] LIKE '%$searchArray[0]%' $linkToText");
                 }
             }
 
-            //$stmt -> bindParam(":".$linkTo, $search, PDO::PARAM_STR);
+            if(count($linkToArray)>1){
+                unset($linkToArray[0]);
+                foreach($linkToArray as $key => $value){
+                    $stmt->bindParam(":".$value, $searchArray[$key], PDO::PARAM_STR);
+                }
+            }
             $stmt -> execute();
             return $stmt ->fetchAll(PDO::FETCH_CLASS);
 
