@@ -22,15 +22,28 @@ class GetModel{
     /* GET Petition with Filter */
     static public function getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $select){
 
+        $linkToArray = explode(",", $linkTo);
+        $equalToArray = explode(",", $equalTo);
+        $linkToText = "";
+        if(count($linkToArray)>1){
+            foreach($linkToArray as $key => $value){
+                if($key>0){
+                    $linkToText .= "AND ".$value." = :".$value." ";
+                }
+            }
+        }
+
         try{
             if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode");
             }else if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
             }else{
-            $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkTo = :$linkTo");
+            $stmt = Conection::connect()->prepare("SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText");
             }
-            $stmt -> bindParam(":".$linkTo, $equalTo, PDO::PARAM_STR);
+            foreach($linkToArray as $key => $value){
+                $stmt -> bindParam(":".$value, $equalToArray[$key], PDO::PARAM_STR);
+            }
             $stmt -> execute();
             return $stmt ->fetchAll(PDO::FETCH_CLASS);
         }catch(PDOException $e){
@@ -100,6 +113,17 @@ class GetModel{
      /* GET Petition relation tables with Filter */
      static public function getRelFilterData($rel, $type, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt, $select){
 
+        $linkToArray = explode(",", $linkTo);
+        $equalToArray = explode(",", $equalTo);
+        $linkToText = "";
+        if(count($linkToArray)>1){
+            foreach($linkToArray as $key => $value){
+                if($key>0){
+                    $linkToText .= "AND ".$value." = :".$value." ";
+                }
+            }
+        }
+
         $relArray= explode(",", $rel);
         $typeArray=explode(",", $type);
         
@@ -121,35 +145,37 @@ class GetModel{
             /* relation about 2 tables */
             if(count($relArray)==2 && count($typeArray)==2){
                 if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode");
                 }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
                 } else{
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkTo = :$linkTo");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText");
                 }
             } 
             /* relation amoung 3 tables */
             if(count($relArray)==3 && count($typeArray)==3){
                 if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode");
                 }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
                 } else{
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkTo = :$linkTo");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText");
                 }
             } 
             /* relation amoung 4 tables */
             if(count($relArray)==4 && count($typeArray)==4){  
                 if($orderBy!=null && $orderMode!=null && $startAt==null && $endAt==null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode");
                 }else  if($orderBy!=null && $orderMode!=null && $startAt!=null && $endAt!=null){
-                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo = :$linkTo ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
+                    $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt");
                 } else{
-                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkTo = :$linkTo");
+                $stmt = Conection::connect()->prepare("SELECT $select FROM $relArray[0] INNER JOIN $relArray[1] ON $on1a = $on1b INNER JOIN $relArray[2] ON $on2a=$on2b INNER JOIN $relArray[3] ON $on3a=$on3b WHERE $linkToArray[0] = :$linkToArray[0] $linkToText");
                 }
             }
 
-            $stmt -> bindParam(":".$linkTo, $equalTo, PDO::PARAM_STR);
+            foreach($linkToArray as $key => $value){
+                $stmt -> bindParam(":".$value, $equalToArray[$key], PDO::PARAM_STR);
+            }
             $stmt -> execute();
             return $stmt ->fetchAll(PDO::FETCH_CLASS);
         }catch(PDOException $e){
