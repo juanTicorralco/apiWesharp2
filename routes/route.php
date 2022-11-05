@@ -424,7 +424,7 @@ if (count($routesArray) == 0) {
 
                         /* validate that the token has not expired */
                         $time = time();
-                        if ($user[0]->token_exp_user < $time) {
+                        if ($user[0]->token_exp_user > $time) {
 
                             $response = new DeleteController();
                             $response->deleteData(explode("?", $routesArray[1])[0], $_GET["id"], $_GET["nameId"]);
