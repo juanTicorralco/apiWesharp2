@@ -114,6 +114,39 @@ if (count($routesArray) == 0) {
                 $response = new GetController();
                 $response->getSearchData(explode("?", $routesArray[1])[0], $_GET["linkTo"], $_GET["search"], $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
             }
+        } else if (isset($_GET['linkTo']) && isset($_GET['between1']) && isset($_GET['between2']) && isset($_GET['filterTo']) && isset($_GET['inTo'])) {
+
+            /* get petition for between */
+            /* GET Order Tables  */
+            if (isset($_GET["orderBy"]) && isset($_GET["orderMode"])) {
+
+                $orderBy = $_GET["orderBy"];
+                $orderMode = $_GET["orderMode"];
+            } else {
+
+                $orderBy = null;
+                $orderMode = null;
+            }
+            /* GET star and ent at  */
+            if (isset($_GET["startAt"]) && isset($_GET["endAt"])) {
+
+                $startAt = $_GET["startAt"];
+                $endAt = $_GET["endAt"];
+            } else {
+
+                $startAt = null;
+                $endAt = null;
+            }
+
+            if (explode("?", $routesArray[1])[0] == "relations" && isset($_GET["rel"]) && isset($_GET["type"])) {
+
+                $response = new GetController();
+                $response->getBetweenRelData($_GET["rel"], $_GET["type"], $_GET["linkTo"], $_GET['between1'], $_GET['between2'], $_GET['filterTo'], $_GET['inTo'], $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
+            } else {
+
+                $response = new GetController();
+                $response->getBetweenData(explode("?", $routesArray[1])[0], $_GET["linkTo"], $_GET['between1'], $_GET['between2'], $_GET['filterTo'], $_GET['inTo'], $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
+            }
         } else {
 
             /* GET Petition not filter */
