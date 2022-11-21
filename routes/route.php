@@ -16,8 +16,60 @@ if (count($routesArray) == 0) {
     /* petition GET */
     if (count($routesArray) == 1 && isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] == "GET") {
 
+        // peticion get con autorization administrative
+        foreach(RouetesController::tableProtected() as $key => $value){
+            if($value != "users"){
+                if(explode("?", $routesArray[1])[0] == $value || (isset($_GET["rel"]) && explode(",", $_GET["rel"])[0] == $value)){
+                    if(isset($_GET["token"])){
+                        if($_GET["token"] != "tokenGlobal"){
+                            $user = GetModel::getFilterData("users","token_user",$_GET["token"],null,null,null,null,"token_exp_user");
+                            if(!empty($user)){
+                                $time = time();
+                                if($user[0]->token_exp_user < $time){
+                                    $json = array(
+                                        'status' => 303,
+                                        'result' => "Error: the token has expired"
+                                    );
+                                    echo json_encode($json, http_response_code($json['status']));
+                                    return;
+                                }
+                            }else{
+                                $json = array(
+                                    'status' => 400,
+                                    "result" => "Error: this user no autorized"
+                                );
+                                echo json_encode($json, http_response_code($json["status"]));
+                                return;   
+                            }
+                        }
+                    }else{
+                        $json = array(
+                            'status' => 400,
+                            "result" => "You need login"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                }
+            }
+        }
+
         /* GET Petition with filter */
         if (isset($_GET['linkTo']) && isset($_GET['equalTo']) && !isset($_GET['rel']) && !isset($_GET['type'])) {
+
+             // peticion get con autorization administrative
+             foreach(RouetesController::tableProtected() as $key => $value){
+                if(explode("?", $routesArray[1])[0] == $value){
+                    if(isset($_GET["select"]) && $_GET["select"] == "*"){
+                        $json = array(
+                            'status' => 400,
+                            "result" => "you are no autorized for make this request"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                }
+            }
 
             /* GET Order Tables  */
             if (isset($_GET["orderBy"]) && isset($_GET["orderMode"])) {
@@ -38,6 +90,21 @@ if (count($routesArray) == 0) {
             $response = new GetController();
             $response->getFilterData(explode("?", $routesArray[1])[0], $_GET["linkTo"], $_GET["equalTo"], $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
         } else if (isset($_GET['rel']) && isset($_GET['type']) && explode("?", $routesArray[1])[0] == "relations" && !isset($_GET['linkTo']) && !isset($_GET['equalTo'])) {
+            
+            // peticion get con autorization administrative
+            foreach(RouetesController::tableProtected() as $key => $value){
+                if(explode("?", $routesArray[1])[0] == $value){
+                    if(isset($_GET["select"]) && $_GET["select"] == "*"){
+                        $json = array(
+                            'status' => 400,
+                            "result" => "you are no autorized for make this request"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                }
+            }
+
             /* Get Petition of relation tables not filter */
             if (isset($_GET["orderBy"]) && isset($_GET["orderMode"])) {
                 $orderBy = $_GET["orderBy"];
@@ -57,6 +124,20 @@ if (count($routesArray) == 0) {
             $response = new GetController();
             $response->getRelData($_GET["rel"], $_GET["type"], $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
         } else if (isset($_GET['rel']) && isset($_GET['type']) && explode("?", $routesArray[1])[0] == "relations" && isset($_GET['linkTo']) && isset($_GET['equalTo'])) {
+
+            // peticion get con autorization administrative
+            foreach(RouetesController::tableProtected() as $key => $value){
+                if(explode("?", $routesArray[1])[0] == $value){
+                    if(isset($_GET["select"]) && $_GET["select"] == "*"){
+                        $json = array(
+                            'status' => 400,
+                            "result" => "you are no autorized for make this request"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                }
+            }
 
             /* Get Petition of relation tables with filter */
             /* GET Order Tables  */
@@ -83,6 +164,20 @@ if (count($routesArray) == 0) {
             $response->getRelFilterData($_GET["rel"], $_GET["type"], $_GET["linkTo"], $_GET["equalTo"], $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
         } else if (isset($_GET['linkTo']) && isset($_GET['search'])) {
 
+            // peticion get con autorization administrative
+            foreach(RouetesController::tableProtected() as $key => $value){
+                if(explode("?", $routesArray[1])[0] == $value){
+                    if(isset($_GET["select"]) && $_GET["select"] == "*"){
+                        $json = array(
+                            'status' => 400,
+                            "result" => "you are no autorized for make this request"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                }
+            }
+            
             /* get petition for search */
             /* GET Order Tables  */
             if (isset($_GET["orderBy"]) && isset($_GET["orderMode"])) {
@@ -116,6 +211,20 @@ if (count($routesArray) == 0) {
             }
         } else if (isset($_GET['linkTo']) && isset($_GET['between1']) && isset($_GET['between2']) && isset($_GET['filterTo']) && isset($_GET['inTo'])) {
 
+            // peticion get con autorization administrative
+            foreach(RouetesController::tableProtected() as $key => $value){
+                if(explode("?", $routesArray[1])[0] == $value){
+                    if(isset($_GET["select"]) && $_GET["select"] == "*"){
+                        $json = array(
+                            'status' => 400,
+                            "result" => "you are no autorized for make this request"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                }
+            }
+            
             /* get petition for between */
             /* GET Order Tables  */
             if (isset($_GET["orderBy"]) && isset($_GET["orderMode"])) {
@@ -148,6 +257,41 @@ if (count($routesArray) == 0) {
                 $response->getBetweenData(explode("?", $routesArray[1])[0], $_GET["linkTo"], $_GET['between1'], $_GET['between2'], $_GET['filterTo'], $_GET['inTo'], $orderBy, $orderMode, $startAt, $endAt, $_GET["select"]);
             }
         } else {
+
+            // peticion get con autorization administrative
+            foreach(RouetesController::tableProtected() as $key => $value){
+                if(explode("?", $routesArray[1])[0] == $value){
+                    if(isset($_GET["rol"])){
+                        $linkTo = "username_user";
+                        $equalTo = $_GET["rol"];
+                        $response = GetModel::getFilterData("users",$linkTo,$equalTo,null,null,null,null,"rol_user");
+                        if(count($response) > 0){
+                            if($response[0]->rol_user != "admin"){
+                                $json = array(
+                                    'status' => 400,
+                                    "result" => "you are no autorized for make this request"
+                                );
+                                echo json_encode($json, http_response_code($json["status"]));
+                                return;
+                            }
+                        }else{
+                            $json = array(
+                                'status' => 400,
+                                "result" => "you are no autorized for make this request"
+                            );
+                            echo json_encode($json, http_response_code($json["status"]));
+                            return;
+                        }
+                    }else{
+                        $json = array(
+                            'status' => 400,
+                            "result" => "you are no autorized for make this request"
+                        );
+                        echo json_encode($json, http_response_code($json["status"]));
+                        return;
+                    }
+                }
+            }
 
             /* GET Petition not filter */
             /* GET Order Tables  */
